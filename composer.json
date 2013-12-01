@@ -1,0 +1,24 @@
+{
+    "name": "symm/google-authenticator",
+    "description": "Interact with the Google Authenticator mobile app for 2-factor-authentication.",
+    "minimum-stability": "stable",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name" : "Michael Kliewe"
+        },
+        {
+            "name": "Gareth Jones",
+            "email": "me@gazj.co.uk"
+        }
+    ],
+    "suggest": {
+        "endroid/qrcode": "1.*@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "psr-0": {
+        "Symm\\": "src/"
+    }
+}
