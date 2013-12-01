@@ -33,13 +33,37 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(strlen($secret), 16);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testCreateSecretLengthCannotBeZero()
+    {
+        $this->googleAuthenticator->createSecret(0);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testCreateSecretLengthMustBeInteger()
+    {
+        $this->googleAuthenticator->createSecret('three');
+    }
+
     public function testCreateSecretLengthCanBeSpecified()
     {
         $ga = $this->googleAuthenticator;
-        for ($secretLength = 0; $secretLength < 100; $secretLength++) {
+        for ($secretLength = 1; $secretLength < 100; $secretLength++) {
             $secret = $ga->createSecret($secretLength);
             $this->assertEquals(strlen($secret), $secretLength);
         }
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testGetCodeThrowsExceptionIfTimesliceNotNumeric()
+    {
+        $this->googleAuthenticator->getCode('SECRET', 'twentyseven');
     }
 
     /**
@@ -69,6 +93,15 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($queryStringArray['chl'], $expectedChl);
     }
 
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testVerifyCodeThrowsExceptionIfDiscrepancyNotNumeric()
+    {
+        $this->googleAuthenticator->verifyCode('SECRET', 'CODE', 'twentyseven');
+    }
+
     public function testVerifyCode()
     {
         $secret = 'SECRET';
@@ -80,6 +113,22 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
         $result = $this->googleAuthenticator->verifyCode($secret, $code);
         $this->assertEquals(false, $result);
 
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testSetCodeLengthIsNumeric()
+    {
+        $this->googleAuthenticator->setCodeLength('two');
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testSetCodeLengthBounds()
+    {
+        $this->googleAuthenticator->setCodeLength(1);
     }
 
     public function testsetCodeLength()
