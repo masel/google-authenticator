@@ -15,13 +15,21 @@ class PHPGangsta_GoogleAuthenticator
 
     /**
      * Create new secret.
-     * 16 characters, randomly chosen from the allowed base32 characters.
+     * Randomly chosen from the allowed base32 characters.
      *
-     * @param int $secretLength
+     * @param int $secretLength Defaults to 16 characters
      * @return string
+     * @throws InvalidArgumentException
      */
     public function createSecret($secretLength = 16)
     {
+        if (!is_numeric($secretLength)) {
+            throw new InvalidArgumentException('Secret must be numeric');
+        }
+        if ($secretLength < 1) {
+            throw new InvalidArgumentException('Secret must be at least one character long');
+        }
+
         $validChars = $this->_getBase32LookupTable();
         unset($validChars[32]);
 
@@ -38,9 +46,14 @@ class PHPGangsta_GoogleAuthenticator
      * @param string $secret
      * @param int|null $timeSlice
      * @return string
+     * @throws InvalidArgumentException
      */
     public function getCode($secret, $timeSlice = null)
     {
+        if ($timeSlice !== null && !is_numeric($timeSlice)) {
+            throw new InvalidArgumentException('Time slice must be numeric');
+        }
+
         if ($timeSlice === null) {
             $timeSlice = floor(time() / 30);
         }
@@ -85,9 +98,14 @@ class PHPGangsta_GoogleAuthenticator
      * @param string $code
      * @param int $discrepancy This is the allowed time drift in 30 second units (8 means 4 minutes before or after)
      * @return bool
+     * @throws InvalidArgumentException
      */
     public function verifyCode($secret, $code, $discrepancy = 1)
     {
+        if (!is_numeric($discrepancy)) {
+            throw new InvalidArgumentException('Discrepancy must be numeric');
+        }
+
         $currentTimeSlice = floor(time() / 30);
 
         for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
@@ -105,9 +123,17 @@ class PHPGangsta_GoogleAuthenticator
      *
      * @param int $length
      * @return PHPGangsta_GoogleAuthenticator
+     * @throws InvalidArgumentException
      */
     public function setCodeLength($length)
     {
+        if (!is_numeric($length)) {
+            throw new InvalidArgumentException('Length must be numeric');
+        }
+        if ($length < 6) {
+            throw new InvalidArgumentException('Length must be greater than or equal to 6');
+        }
+
         $this->_codeLength = $length;
         return $this;
     }
