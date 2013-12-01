@@ -13,6 +13,35 @@ class PHPGangsta_GoogleAuthenticator
 {
     protected $_codeLength = 6;
 
+    private $secret;
+
+
+    public function __construct($secret = null)
+    {
+        if (!$secret) {
+            $this->secret = $this->createSecret(16);
+
+        } else {
+            if (!$this->isValidSecret($secret)) {
+                throw new Exception($secret . ' is not a valid base32 encoded secret');
+            }
+
+            $this->secret = $secret;
+        }
+    }
+
+    private function isValidSecret($secret)
+    {
+        $validCharacters = $this->_getBase32LookupTable();
+        $secret = str_replace($validCharacters, '', $secret);
+
+        if ($secret  === '') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Create new secret.
      * Randomly chosen from the allowed base32 characters.
@@ -41,14 +70,29 @@ class PHPGangsta_GoogleAuthenticator
     }
 
     /**
+     * @param string $secret
+     */
+    public function setSecret($secret)
+    {
+        $this->secret = $secret;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->secret;
+    }
+
+    /**
      * Calculate the code, with given secret and point in time
      *
-     * @param string $secret
      * @param int|null $timeSlice
      * @return string
      * @throws InvalidArgumentException
      */
-    public function getCode($secret, $timeSlice = null)
+    public function getCode($timeSlice = null)
     {
         if ($timeSlice !== null && !is_numeric($timeSlice)) {
             throw new InvalidArgumentException('Time slice must be numeric');
@@ -58,7 +102,7 @@ class PHPGangsta_GoogleAuthenticator
             $timeSlice = floor(time() / 30);
         }
 
-        $secretkey = $this->_base32Decode($secret);
+        $secretkey = $this->_base32Decode($this->secret);
 
         // Pack time into binary string
         $time = chr(0).chr(0).chr(0).chr(0).pack('N*', $timeSlice);
@@ -83,24 +127,22 @@ class PHPGangsta_GoogleAuthenticator
      * Get QR-Code URL for image, from google charts
      *
      * @param string $name
-     * @param string $secret
      * @return string
      */
-    public function getQRCodeGoogleUrl($name, $secret) {
-        $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$secret.'');
+    public function getQRCodeGoogleUrl($name) {
+        $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$this->secret.'');
         return 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='.$urlencoded.'';
     }
 
     /**
      * Check if the code is correct. This will accept codes starting from $discrepancy*30sec ago to $discrepancy*30sec from now
      *
-     * @param string $secret
      * @param string $code
      * @param int $discrepancy This is the allowed time drift in 30 second units (8 means 4 minutes before or after)
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function verifyCode($secret, $code, $discrepancy = 1)
+    public function verifyCode($code, $discrepancy = 1)
     {
         if (!is_numeric($discrepancy)) {
             throw new InvalidArgumentException('Discrepancy must be numeric');
@@ -109,7 +151,7 @@ class PHPGangsta_GoogleAuthenticator
         $currentTimeSlice = floor(time() / 30);
 
         for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
-            $calculatedCode = $this->getCode($secret, $currentTimeSlice + $i);
+            $calculatedCode = $this->getCode($currentTimeSlice + $i);
             if ($calculatedCode == $code ) {
                 return true;
             }
