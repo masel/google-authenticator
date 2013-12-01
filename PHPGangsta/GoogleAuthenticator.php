@@ -23,7 +23,7 @@ class PHPGangsta_GoogleAuthenticator
 
         } else {
             if (!$this->isValidSecret($secret)) {
-                throw new Exception($secret . ' is not a valid base32 encoded secret');
+                throw new InvalidArgumentException($secret . ' is not a valid base32 encoded secret');
             }
 
             $this->secret = $secret;
@@ -67,14 +67,6 @@ class PHPGangsta_GoogleAuthenticator
             $secret .= $validChars[array_rand($validChars)];
         }
         return $secret;
-    }
-
-    /**
-     * @param string $secret
-     */
-    public function setSecret($secret)
-    {
-        $this->secret = $secret;
     }
 
     /**
@@ -224,6 +216,7 @@ class PHPGangsta_GoogleAuthenticator
      * @param bool $padding
      * @return string
      */
+    /*
     protected function _base32Encode($secret, $padding = true)
     {
         if (empty($secret)) return '';
@@ -250,6 +243,7 @@ class PHPGangsta_GoogleAuthenticator
         }
         return $base32;
     }
+    */
 
     /**
      * Get array with all 32 characters for decoding from/encoding to base32

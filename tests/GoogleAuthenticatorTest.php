@@ -24,8 +24,16 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
 
     public function testItCanBeInstantiated()
     {
-        $ga = new PHPGangsta_GoogleAuthenticator($this->secret);
+        $ga = new PHPGangsta_GoogleAuthenticator();
         $this->assertInstanceOf('PHPGangsta_GoogleAuthenticator', $ga);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testCreatedWithInvalidSecret()
+    {
+        $ga = new PHPGangsta_GoogleAuthenticator('^%^&%^34543');
     }
 
     public function testCreateSecretDefaultsToSixteenCharacters()
