@@ -11,6 +11,7 @@ if (!array_key_exists('secret', $_SESSION)) {
     $secret = $_SESSION['secret'];
 }
 $ga = new PHPGangsta_GoogleAuthenticator($secret);
+$ga->setTolerance(2);
 $_SESSION['secret'] = $ga->getSecret();
 
 $isAuthenticated = false;
@@ -32,15 +33,19 @@ $imageUrl = $ga->getQRCodeGoogleUrl('MyApp');
 <body>
     <div class="container">
         <div class="row">
-            <h1>Google Authenticator Example</h1>
-
-            <h2>1. Install Google Authenticator</h2>
-            <p>
-                <a href="https://support.google.com/accounts/answer/1066447?hl=en">Download the app here</a>
-            </p>
-            <h2>2. Scan the Barcode with your Phone:</h2>
+            <div class="col-md-12">
+                <h1>Google Authenticator Example</h1>
+            </div>
+            <div class="col-md-6">
+                <h3>1. Install Google Authenticator</h3>
+                <p>
+                    <a href="https://support.google.com/accounts/answer/1066447?hl=en">Download the app here</a>
+                </p>
+                <h3>2. Scan the QR Code with your device:</h3>
                 <img src="<?= $imageUrl; ?>"  />
-            <h3>2. Enter the code displayed to authenticate:</h3>
+            </div>
+            <div class="col-md-6">
+            <h3>2. Enter the code displayed:</h3>
             <form role="form" method="POST">
                 <?php
                 if ($_POST) {
@@ -53,10 +58,12 @@ $imageUrl = $ga->getQRCodeGoogleUrl('MyApp');
                 ?>
                 <div class="form-group <?php if ($_POST) { print ($isAuthenticated) ? 'has-success' : 'has-error'; } ?>">
                     <label for="authenticationCode">Authentication Code</label>
-                    <input type="text" class="form-control" id="authenticationCode" name="code" placeholder="Enter code" value="<?php echo ($_POST) ? htmlentities($_POST['code']) : ''; ?>">
+                    <input type="text" class="form-control" id="authenticationCode" autocomplete="off"
+                           name="code" placeholder="Enter code" value="<?php echo ($_POST) ? htmlentities($_POST['code']) : ''; ?>">
                 </div>
-                <button type="submit" class="btn btn-default">Submit</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+            </div>
         </div>
     </div>
 </body>
