@@ -3,11 +3,61 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e5a1751d8f5f77d184ee7d9c1a205cdc",
+    "hash": "4f9a09450a771690bbaf03b1e772e9a5",
     "packages": [
 
     ],
     "packages-dev": [
+        {
+            "name": "endroid/qrcode",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/endroid/QrCode.git",
+                "reference": "9ab6cce7db59d5cfa835afe648776ce2b5497901"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/endroid/QrCode/zipball/9ab6cce7db59d5cfa835afe648776ce2b5497901",
+                "reference": "9ab6cce7db59d5cfa835afe648776ce2b5497901",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Endroid": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeroen van den Enden",
+                    "email": "info@endroid.nl",
+                    "homepage": "http://endroid.nl/"
+                }
+            ],
+            "description": "Endroid QR Code",
+            "homepage": "https://github.com/endroid/QrCode",
+            "keywords": [
+                "code",
+                "endroid",
+                "qr",
+                "qrcode"
+            ],
+            "time": "2013-10-27 17:27:53"
+        },
         {
             "name": "phpunit/php-code-coverage",
             "version": "1.2.13",
@@ -427,9 +477,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "endroid/qrcode": 20
+    },
     "platform": [
 
     ],
