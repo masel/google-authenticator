@@ -12,7 +12,7 @@
 class PHPGangsta_GoogleAuthenticator
 {
 
-    protected $_codeLength = 6;
+    protected $codeLength = 6;
     private $secret;
     private $tolerance;
 
@@ -57,7 +57,7 @@ class PHPGangsta_GoogleAuthenticator
 
     private function isValidSecret($secret)
     {
-        $validCharacters = $this->_getBase32LookupTable();
+        $validCharacters = $this->getBase32LookupTable();
         $secret = str_replace($validCharacters, '', $secret);
 
         if ($secret  === '') {
@@ -84,13 +84,14 @@ class PHPGangsta_GoogleAuthenticator
             throw new InvalidArgumentException('Secret must be at least one character long');
         }
 
-        $validChars = $this->_getBase32LookupTable();
+        $validChars = $this->getBase32LookupTable();
         unset($validChars[32]);
 
         $secret = '';
         for ($i = 0; $i < $secretLength; $i++) {
             $secret .= $validChars[array_rand($validChars)];
         }
+
         return $secret;
     }
 
@@ -119,7 +120,7 @@ class PHPGangsta_GoogleAuthenticator
             $timeSlice = floor(time() / 30);
         }
 
-        $secretkey = $this->_base32Decode($this->secret);
+        $secretkey = $this->base32Decode($this->secret);
 
         // Pack time into binary string
         $time = chr(0).chr(0).chr(0).chr(0).pack('N*', $timeSlice);
@@ -136,8 +137,9 @@ class PHPGangsta_GoogleAuthenticator
         // Only 32 bits
         $value = $value & 0x7FFFFFFF;
 
-        $modulo = pow(10, $this->_codeLength);
-        return str_pad($value % $modulo, $this->_codeLength, '0', STR_PAD_LEFT);
+        $modulo = pow(10, $this->codeLength);
+
+        return str_pad($value % $modulo, $this->codeLength, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -149,6 +151,7 @@ class PHPGangsta_GoogleAuthenticator
     public function getQRCodeGoogleUrl($name)
     {
         $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$this->secret.'');
+
         return 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='.$urlencoded.'';
     }
 
@@ -195,8 +198,8 @@ class PHPGangsta_GoogleAuthenticator
         if ($length < 6) {
             throw new InvalidArgumentException('Length must be greater than or equal to 6');
         }
+        $this->codeLength = $length;
 
-        $this->_codeLength = $length;
         return $this;
     }
 
@@ -206,26 +209,35 @@ class PHPGangsta_GoogleAuthenticator
      * @param $secret
      * @return bool|string
      */
-    protected function _base32Decode($secret)
+    protected function base32Decode($secret)
     {
-        if (empty($secret)) return '';
+        if (empty($secret)) {
+            return '';
+        }
 
-        $base32chars = $this->_getBase32LookupTable();
+        $base32chars = $this->getBase32LookupTable();
         $base32charsFlipped = array_flip($base32chars);
 
         $paddingCharCount = substr_count($secret, $base32chars[32]);
         $allowedValues = array(6, 4, 3, 1, 0);
-        if (!in_array($paddingCharCount, $allowedValues)) return false;
-        for ($i = 0; $i < 4; $i++){
-            if ($paddingCharCount == $allowedValues[$i] &&
-                substr($secret, -($allowedValues[$i])) != str_repeat($base32chars[32], $allowedValues[$i])) return false;
+        if (!in_array($paddingCharCount, $allowedValues)) {
+            return false;
         }
-        $secret = str_replace('=','', $secret);
+        for ($i = 0; $i < 4; $i++) {
+            if ($paddingCharCount == $allowedValues[$i] &&
+                substr($secret, -($allowedValues[$i])) != str_repeat($base32chars[32], $allowedValues[$i])
+            ) {
+                return false;
+            }
+        }
+        $secret = str_replace('=', '', $secret);
         $secret = str_split($secret);
         $binaryString = "";
         for ($i = 0; $i < count($secret); $i = $i+8) {
             $x = "";
-            if (!in_array($secret[$i], $base32chars)) return false;
+            if (!in_array($secret[$i], $base32chars)) {
+                return false;
+            }
             for ($j = 0; $j < 8; $j++) {
                 $x .= str_pad(base_convert(@$base32charsFlipped[@$secret[$i + $j]], 10, 2), 5, '0', STR_PAD_LEFT);
             }
@@ -234,6 +246,7 @@ class PHPGangsta_GoogleAuthenticator
                 $binaryString .= ( ($y = chr(base_convert($eightBits[$z], 2, 10))) || ord($y) == 48 ) ? $y:"";
             }
         }
+
         return $binaryString;
     }
 
@@ -245,7 +258,7 @@ class PHPGangsta_GoogleAuthenticator
      * @return string
      */
     /*
-    protected function _base32Encode($secret, $padding = true)
+    protected function base32Encode($secret, $padding = true)
     {
         if (empty($secret)) return '';
 
@@ -278,7 +291,7 @@ class PHPGangsta_GoogleAuthenticator
      *
      * @return array
      */
-    protected function _getBase32LookupTable()
+    protected function getBase32LookupTable()
     {
         return array(
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', //  7
