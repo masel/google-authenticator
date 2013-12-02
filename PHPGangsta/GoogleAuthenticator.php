@@ -11,13 +11,15 @@
 
 class PHPGangsta_GoogleAuthenticator
 {
+
     protected $_codeLength = 6;
-
     private $secret;
-
+    private $tolerance;
 
     public function __construct($secret = null)
     {
+        $this->tolerance = 1;
+
         if (!$secret) {
             $this->secret = $this->createSecret(16);
 
@@ -28,6 +30,29 @@ class PHPGangsta_GoogleAuthenticator
 
             $this->secret = $secret;
         }
+    }
+
+    /**
+     * Set the clock drift tolerance in minutes for accepting codes.
+     * Codes generated x minutes either side of the current code will be accepted
+     *
+     * @param $minutes
+     */
+    public function setTolerance($minutes)
+    {
+        $this->tolerance = $minutes;
+
+        return $this->tolerance;
+    }
+
+    /**
+     * Returns the clock drift tolerance in minutes for accepting codes.
+     *
+     * @return int
+     */
+    public function getTolerance()
+    {
+        return $this->tolerance;
     }
 
     private function isValidSecret($secret)
@@ -121,32 +146,35 @@ class PHPGangsta_GoogleAuthenticator
      * @param string $name
      * @return string
      */
-    public function getQRCodeGoogleUrl($name) {
+    public function getQRCodeGoogleUrl($name)
+    {
         $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$this->secret.'');
         return 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='.$urlencoded.'';
     }
 
     /**
-     * Check if the code is correct. This will accept codes starting from $discrepancy*30sec ago to $discrepancy*30sec from now
+     * Check if the code is correct.
      *
      * @param string $code
-     * @param int $discrepancy This is the allowed time drift in 30 second units (8 means 4 minutes before or after)
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function verifyCode($code, $discrepancy = 1)
+    public function verifyCode($code)
     {
-        if (!is_numeric($discrepancy)) {
-            throw new InvalidArgumentException('Discrepancy must be numeric');
-        }
+        // Allowed time drift in 30 second units. 4 minutes === 8 units
+        // Tolerance is stored in seconds. Double to get the number of 30 second units
+        $discrepancy = $this->tolerance * 2;
 
         $currentTimeSlice = floor(time() / 30);
 
+        $validCodes = array();
         for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
             $calculatedCode = $this->getCode($currentTimeSlice + $i);
-            if ($calculatedCode == $code ) {
-                return true;
-            }
+            $validCodes[$currentTimeSlice + $i] = $calculatedCode;
+        }
+
+        if (in_array($code, $validCodes)) {
+            return true;
         }
 
         return false;

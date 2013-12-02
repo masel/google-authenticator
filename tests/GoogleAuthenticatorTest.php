@@ -102,15 +102,6 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($queryStringArray['chl'], $expectedChl);
     }
 
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testVerifyCodeThrowsExceptionIfDiscrepancyNotNumeric()
-    {
-        $this->googleAuthenticator->verifyCode('SECRET', 'CODE', 'twentyseven');
-    }
-
     public function testVerifyCode()
     {
         $code = $this->googleAuthenticator->getCode();
