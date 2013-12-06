@@ -9,9 +9,11 @@
  * @link http://www.phpgangsta.de/
  */
 
+namespace Symm\GoogleAuthenticator;
+
 use Base32\Base32;
 
-class PHPGangsta_GoogleAuthenticator
+class GoogleAuthenticator
 {
 
     protected $codeLength = 6;
@@ -27,7 +29,7 @@ class PHPGangsta_GoogleAuthenticator
 
         } else {
             if (!$this->isValidSecret($secret)) {
-                throw new InvalidArgumentException($secret . ' is not a valid base32 encoded secret');
+                throw new \InvalidArgumentException($secret . ' is not a valid base32 encoded secret');
             }
 
             $this->secret = $secret;
@@ -76,15 +78,15 @@ class PHPGangsta_GoogleAuthenticator
      *
      * @param int $secretLength Defaults to 16 characters
      * @return string
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function createSecret($secretLength = 16)
     {
         if (!is_numeric($secretLength)) {
-            throw new InvalidArgumentException('Secret must be numeric');
+            throw new \InvalidArgumentException('Secret must be numeric');
         }
         if ($secretLength < 1) {
-            throw new InvalidArgumentException('Secret must be at least one character long');
+            throw new \InvalidArgumentException('Secret must be at least one character long');
         }
 
         $validChars = $this->getBase32LookupTable();
@@ -111,12 +113,12 @@ class PHPGangsta_GoogleAuthenticator
      *
      * @param int|null $timeSlice
      * @return string
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function getCode($timeSlice = null)
     {
         if ($timeSlice !== null && !is_numeric($timeSlice)) {
-            throw new InvalidArgumentException('Time slice must be numeric');
+            throw new \InvalidArgumentException('Time slice must be numeric');
         }
 
         if ($timeSlice === null) {
@@ -163,7 +165,7 @@ class PHPGangsta_GoogleAuthenticator
      *
      * @param string $code
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function verifyCode($code)
     {
@@ -191,15 +193,15 @@ class PHPGangsta_GoogleAuthenticator
      *
      * @param int $length
      * @return PHPGangsta_GoogleAuthenticator
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function setCodeLength($length)
     {
         if (!is_numeric($length)) {
-            throw new InvalidArgumentException('Length must be numeric');
+            throw new \InvalidArgumentException('Length must be numeric');
         }
         if ($length < 6) {
-            throw new InvalidArgumentException('Length must be greater than or equal to 6');
+            throw new \InvalidArgumentException('Length must be greater than or equal to 6');
         }
         $this->codeLength = $length;
 

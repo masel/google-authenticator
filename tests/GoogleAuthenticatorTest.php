@@ -1,8 +1,10 @@
 <?php
 
+use Symm\GoogleAuthenticator\GoogleAuthenticator;
+
 class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
 
-    /* @var $googleAuthenticator PHPGangsta_GoogleAuthenticator */
+    /* @var $googleAuthenticator GoogleAuthenticator */
     protected $googleAuthenticator;
     protected $secret;
 
@@ -10,7 +12,7 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
     {
         // Test token with ascii value 12345678901234567890
         $this->secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
-        $this->googleAuthenticator = new PHPGangsta_GoogleAuthenticator($this->secret);
+        $this->googleAuthenticator = new GoogleAuthenticator($this->secret);
     }
 
     public function codeProvider()
@@ -37,8 +39,8 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
 
     public function testItCanBeInstantiated()
     {
-        $ga = new PHPGangsta_GoogleAuthenticator();
-        $this->assertInstanceOf('PHPGangsta_GoogleAuthenticator', $ga);
+        $ga = new GoogleAuthenticator();
+        $this->assertInstanceOf('\Symm\GoogleAuthenticator\GoogleAuthenticator', $ga);
     }
 
     /**
@@ -46,7 +48,7 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
      */
     public function testCreatedWithInvalidSecret()
     {
-        $ga = new PHPGangsta_GoogleAuthenticator('^%^&%^34543');
+        $ga = new GoogleAuthenticator('^%^&%^34543');
     }
 
     public function testCreateSecretDefaultsToSixteenCharacters()
@@ -146,6 +148,6 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
     public function testsetCodeLength()
     {
         $result = $this->googleAuthenticator->setCodeLength(6);
-        $this->assertInstanceOf('PHPGangsta_GoogleAuthenticator', $result);
+        $this->assertInstanceOf('\Symm\GoogleAuthenticator\GoogleAuthenticator', $result);
     }
 } 

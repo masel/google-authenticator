@@ -1,12 +1,11 @@
 <?php
 
-require_once '../PHPGangsta/GoogleAuthenticator.php';
 require_once '../vendor/autoload.php';
 
 session_start();
 
 $secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
-$ga = new PHPGangsta_GoogleAuthenticator($secret);
+$ga = new Symm\GoogleAuthenticator\GoogleAuthenticator($secret);
 $ga->setTolerance(1);
 
 $isAuthenticated = false;
