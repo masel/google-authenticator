@@ -12,6 +12,9 @@
             "email": "me@gazj.co.uk"
         }
     ],
+    "require" : {
+        "christian-riesen/base32": "1.*"
+    },
     "suggest": {
         "endroid/qrcode": "1.*@dev"
     },

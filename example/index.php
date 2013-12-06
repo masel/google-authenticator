@@ -1,22 +1,17 @@
 <?php
 
 require_once '../PHPGangsta/GoogleAuthenticator.php';
+require_once '../vendor/autoload.php';
 
 session_start();
 
-// Normally we would store the secret along side the user info but for demo purposes we'll save it in the session.
-if (!array_key_exists('secret', $_SESSION)) {
-    $secret = null;
-} else {
-    $secret = $_SESSION['secret'];
-}
+$secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
 $ga = new PHPGangsta_GoogleAuthenticator($secret);
-$ga->setTolerance(2);
-$_SESSION['secret'] = $ga->getSecret();
+$ga->setTolerance(1);
 
 $isAuthenticated = false;
 if ($_POST) {
-    $isAuthenticated = $ga->verifyCode($_POST['code'], 2);    // 2 = 2*30sec clock tolerance
+    $isAuthenticated = $ga->verifyCode($_POST['code']);
 }
 
 

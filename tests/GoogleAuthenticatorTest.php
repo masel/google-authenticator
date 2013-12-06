@@ -8,7 +8,8 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $this->secret = "SECRET";
+        // Test token with ascii value 12345678901234567890
+        $this->secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
         $this->googleAuthenticator = new PHPGangsta_GoogleAuthenticator($this->secret);
     }
 
@@ -16,9 +17,21 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
     {
         // Secret, time, code
         return array(
-            array(0, '200470'),
-            array(1385909245, '780018'),
-            array(1378934578, '705013'),
+            array(0, '755224'),
+            array(1, '287082'),
+            array(2, '359152'),
+            array(3, '969429'),
+            array(4, '338314'),
+            array(5, '254676'),
+            array(6, '287922'),
+            array(7, '162583'),
+            array(8, '399871'),
+            array(9, '520489'),
+            array(46211301, '867724'),
+            array(46211302, '098223'),
+            array(46211303, '136860'),
+            array(46211304, '175699'),
+            array(46211305, '243893')
         );
     }
 
