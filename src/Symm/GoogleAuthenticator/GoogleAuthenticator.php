@@ -12,6 +12,7 @@
 namespace Symm\GoogleAuthenticator;
 
 use Base32\Base32;
+use Rych\Random\Random;
 
 class GoogleAuthenticator
 {
@@ -92,9 +93,11 @@ class GoogleAuthenticator
         $validChars = $this->getBase32LookupTable();
         unset($validChars[32]);
 
+        $random = new Random();
         $secret = '';
         for ($i = 0; $i < $secretLength; $i++) {
-            $secret .= $validChars[array_rand($validChars)];
+            $randomInt = $random->getRandomInteger(0, (count($validChars) - 1));
+            $secret .= $validChars[$randomInt];
         }
 
         return $secret;
