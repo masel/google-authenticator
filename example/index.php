@@ -2,10 +2,13 @@
 
 require_once '../vendor/autoload.php';
 
-session_start();
-
 $secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
-$ga = new Symm\GoogleAuthenticator\GoogleAuthenticator($secret);
+
+$ga = new Symm\GoogleAuthenticator\GoogleAuthenticator('user@example.com', $secret);
+$endroid = new \Symm\GoogleAuthenticator\QrCodeGenerator\GoogleChartQrCodeGenerator();
+
+$ga->setIssuer('example.com');
+$ga->setQrCodeGenerator($endroid);
 $ga->setTolerance(1);
 
 $isAuthenticated = false;
@@ -13,8 +16,7 @@ if ($_POST) {
     $isAuthenticated = $ga->verifyCode($_POST['code']);
 }
 
-
-$imageUrl = $ga->getQRCodeGoogleUrl('MyApp');
+$imageUrl = $ga->getQRCodeUrl();
 
 ?>
 

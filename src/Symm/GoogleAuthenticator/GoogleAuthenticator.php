@@ -13,6 +13,9 @@ namespace Symm\GoogleAuthenticator;
 
 use Base32\Base32;
 use Rych\Random\Random;
+use Symm\GoogleAuthenticator\QRCodeGenerator\QRCodeGenerator;
+use Symm\GoogleAuthenticator\QRCodeGenerator\GoogleChartQrCodeGenerator;
+use Symm\GoogleAuthenticator\OtpAuthUri;
 
 class GoogleAuthenticator
 {
@@ -21,9 +24,16 @@ class GoogleAuthenticator
     private $secret;
     private $tolerance;
 
-    public function __construct($secret = null)
+    /* @var QRCodeGenerator $qrCodeGenerator */
+    private $qrCodeGenerator;
+    private $accountName;
+    private $issuer;
+
+    public function __construct($accountName, $secret = null)
     {
+        $this->accountName = $accountName;
         $this->tolerance = 1;
+        $this->qrCodeGenerator = new GoogleChartQrCodeGenerator();
 
         if (!$secret) {
             $this->secret = $this->createSecret(16);
@@ -35,6 +45,20 @@ class GoogleAuthenticator
 
             $this->secret = $secret;
         }
+    }
+
+    public function setQrCodeGenerator(QRCodeGenerator $generator)
+    {
+        $this->qrCodeGenerator = $generator;
+
+        return $this;
+    }
+
+    public function setIssuer($issuer)
+    {
+        $this->issuer = $issuer;
+
+        return $this;
     }
 
     /**
@@ -151,16 +175,18 @@ class GoogleAuthenticator
     }
 
     /**
-     * Get QR-Code URL for image, from google charts
-     *
-     * @param string $name
+     * Returns a url suitable for inserting into an img href attribute
+     * @param int $size
      * @return string
      */
-    public function getQRCodeGoogleUrl($name)
+    public function getQRCodeUrl($size = 200)
     {
-        $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$this->secret.'');
+        $otpUri = new OtpAuthUri($this->accountName, $this->secret);
+        $otpUri->setIssuer($this->issuer);
+        $qrGenerator = $this->qrCodeGenerator;
+        $qrGenerator->setSize($size);
 
-        return 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='.$urlencoded.'';
+        return $qrGenerator->getImageUrl($otpUri);
     }
 
     /**

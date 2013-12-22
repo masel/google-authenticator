@@ -12,7 +12,7 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
     {
         // Test token with ascii value 12345678901234567890
         $this->secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
-        $this->googleAuthenticator = new GoogleAuthenticator($this->secret);
+        $this->googleAuthenticator = new GoogleAuthenticator('user@example.com', $this->secret);
     }
 
     public function codeProvider()
@@ -39,7 +39,7 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
 
     public function testItCanBeInstantiated()
     {
-        $ga = new GoogleAuthenticator();
+        $ga = new GoogleAuthenticator('example.com');
         $this->assertInstanceOf('\Symm\GoogleAuthenticator\GoogleAuthenticator', $ga);
     }
 
@@ -48,7 +48,7 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
      */
     public function testCreatedWithInvalidSecret()
     {
-        $ga = new GoogleAuthenticator('^%^&%^34543');
+        $ga = new GoogleAuthenticator('user@example.com', '^%^&%^34543');
     }
 
     public function testCreateSecretDefaultsToSixteenCharacters()
@@ -99,22 +99,6 @@ class GoogleAuthenticatorTest extends PHPUnit_Framework_TestCase {
         $generatedCode = $this->googleAuthenticator->getCode($timeSlice);
 
         $this->assertEquals($code, $generatedCode);
-    }
-
-    public function testgetQRCodeGoogleUrlReturnsCorrectUrl()
-    {
-        $name   = 'Test';
-        $url = $this->googleAuthenticator->getQRCodeGoogleUrl($name);
-
-        $urlParts = parse_url($url);
-        parse_str($urlParts['query'], $queryStringArray);
-
-        $this->assertEquals($urlParts['scheme'], 'https');
-        $this->assertEquals($urlParts['host'], 'chart.googleapis.com');
-        $this->assertEquals($urlParts['path'], '/chart');
-
-        $expectedChl = 'otpauth://totp/' . $name . '?secret=' . $this->googleAuthenticator->getSecret();
-        $this->assertEquals($queryStringArray['chl'], $expectedChl);
     }
 
     public function testVerifyCode()
