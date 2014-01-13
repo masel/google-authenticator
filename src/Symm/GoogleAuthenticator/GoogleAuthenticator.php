@@ -204,17 +204,16 @@ class GoogleAuthenticator
 
         $currentTimeSlice = floor(time() / 30);
 
-        $validCodes = array();
+        $result = false;
         for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
             $calculatedCode = $this->getCode($currentTimeSlice + $i);
-            $validCodes[$currentTimeSlice + $i] = $calculatedCode;
+            if ($calculatedCode === $code) {
+                $result = true;
+				break;    
+            }
         }
 
-        if (in_array($code, $validCodes)) {
-            return true;
-        }
-
-        return false;
+        return $result;
     }
 
     /**
