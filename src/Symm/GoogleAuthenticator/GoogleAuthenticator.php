@@ -108,7 +108,7 @@ class GoogleAuthenticator
     public function createSecret($secretLength = 16)
     {
         if (!is_numeric($secretLength)) {
-            throw new \InvalidArgumentException('Secret must be numeric');
+            throw new \InvalidArgumentException('Secretlength must be numeric');
         }
         if ($secretLength < 1) {
             throw new \InvalidArgumentException('Secret must be at least one character long');
